@@ -22,3 +22,20 @@ with open("day-six.in", "r") as f:
 
     print("Part 1:", total)
 
+    # Part 2 (brute force)
+    # convert the integers in times to a single int by appending them, eg. [1, 2, 3] -> 123
+    time = int("".join([str(i) for i in times]))
+    distance = int("".join([str(i) for i in distances]))
+
+    count = 0
+    for i in range(time):
+        time_moving = time - i
+        distance_moving = get_distance(i, time_moving)
+        print(f"time_moving: {time_moving}  distance: {distance_moving}  count: {count}")
+        if distance_moving > distance:
+            count += 1
+
+    print("Part 2:", count)
+
+# 35961505
+# You can also do it the math way, solving the quadratic equation to find the range of values for which the distance moving is greater than the distance

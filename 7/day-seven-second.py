@@ -1,34 +1,50 @@
 hands = []
 hand_to_bid_map = {}
 
-# rank the hands from A to 2
-ranks = "AKQJT98765432"
+ranks = "AKQT98765432J"
+
+def replace(char, hand):
+    # remove all Js from hand
+    temp = hand.replace("J", "")
+    if temp == "":
+        return hand
+    # get the char with the max frequency in one line
+    max_char = max(set(temp), key=temp.count)
+    # replace all instances of "J" with max_char
+    hand = hand.replace(char, max_char)
+    return hand
+
 def weaker_than_pivot(hand, pivot):
     if hand == pivot:
         return False
+    hand_original = hand
+    pivot_original = pivot
     # count the number of distinct cards in hand
-    hand_count = len(set(hand))
-    pivot_count = len(set(pivot))
+    hand_set = set(hand)
+    pivot_set = set(pivot)
+    if "J" in hand_set:
+        # replace J in the hand set with the character with the max frequency
+        hand = replace("J", hand)
+        hand_set = set(hand)
+    if "J" in pivot_set:
+        pivot = replace("J", pivot)
+        pivot_set = set(pivot)
+    hand_count = len(hand_set)
+    pivot_count = len(pivot_set)
     if hand_count > pivot_count:
         return True
     elif hand_count < pivot_count:
         return False
     else:
-        # when the number of distinct cards is the same, either:
-        # 1. they have the same class
-        # 2. four of a kind and full house
-        # 3. three of a kind and two pair
-        # return true if the max count of set(pivot) is greater than the max count of set(hand)
         max_hand_count = max([hand.count(card) for card in set(hand)])
         max_pivot_count = max([pivot.count(card) for card in set(pivot)])
         if max_hand_count != max_pivot_count:
             return max_hand_count < max_pivot_count
         else:
-            # same class, start comparing from first card, rank is A, K, Q, J, T, 9, 8, 7, 6, 5, 4, 3, 2
             for i in range(len(hand)):
-                if ranks.index(hand[i]) == ranks.index(pivot[i]):
+                if ranks.index(hand_original[i]) == ranks.index(pivot_original[i]):
                     continue
-                return ranks.index(hand[i]) > ranks.index(pivot[i])
+                return ranks.index(hand_original[i]) > ranks.index(pivot_original[i])
             return False
 
 def partition(hands, low, high):
@@ -65,4 +81,6 @@ with open("day-seven.in", "r") as f:
         print(f"{rank} {hand} {bid}")
         total += rank * bid
     
-    print("Part 1:", total)
+    print("Part 2:", total)
+
+# 250384185
